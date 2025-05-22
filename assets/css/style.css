@@ -89,17 +89,14 @@
     transition: background-color 0.3s ease;
     margin-bottom: 10px; 
 }
-
 .btn:hover {
     background-color: #28b35d;
 }
-
 @media (max-width: 480px) {
     .btn {
         width: 100%;
         padding: 12px 0;
     }
-
     .card span {
         font-size: 0.85rem;
     }

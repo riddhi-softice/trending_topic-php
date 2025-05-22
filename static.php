@@ -12,13 +12,26 @@
             font-size: 0.96rem;
             color: #abaaaade;
         }
-        #mobile-card, #desktop-card, #welcome-card {
+        #desktop-card, #intro-video, #welcome-card {
             display: none;
         }
         #intro-video {
-            max-width: 100%;
-            height: auto;
-            border-radius: 10px;
+            /* max-width: 100%; */
+            /* overflow: hidden; */
+            /* height: auto; */
+            /* border-radius: 10px; */
+        }
+        /* show full screen */
+        #intro-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+            z-index: 9999;
         }
         .video-wrapper {
             text-align: center;
@@ -28,7 +41,6 @@
 </head>
 <body>
     <div class="container">
-
         <!-- Welcome Screen -->
         <div class="card" id="welcome-card">
             <h1>Welcome</h1>
@@ -39,11 +51,13 @@
 
         <!-- Video Screen -->
         <!-- <div class="card video-wrapper" id="video-screen"> -->
-            <video id="intro-video" src="assets/4.mp4" controls autoplay></video>
+            <!-- <video id="intro-video" src="assets/15.mp4" autoplay muted playsinline oncontextmenu="return false;" controls controlsList="nofullscreen"></video> fullscreen-->
+            <video id="intro-video" src="assets/15.mp4" autoplay muted playsinline oncontextmenu="return false;"></video>
+            <!-- <video id="intro-video" src="assets/4.mp4" autoplay muted playsinline></video> -->
         <!-- </div> -->
 
-        <!-- Mobile View -->
-        <div class="card" id="mobile-card">
+        <!-- Desktop View -->
+        <div class="card" id="desktop-card">
             <h1>Get Our Mobile App</h1>
             <p>This content is only available on smartphones. Tablets and desktop devices are not supported.</p>
             <a class="btn" href="https://play.google.com/store/apps/details?id=com.photolocationstamp.gpsmapgeotagongalleryphotos">
@@ -51,8 +65,8 @@
             <span>For the best experience, please use a smartphone</span>
         </div>
 
-        <!-- Desktop View -->
-        <div class="card" id="desktop-card">
+        <!-- Mobile View -->
+        <div class="card" id="mobile-card">
             <h1>Get Our Desktop App</h1>
             <p>This content is only available on desktop and tablets devices. Smartphone is not supported.</p>
             <a class="btn" href="https://play.google.com/store/apps/details?id=com.photolocationstamp.gpsmapgeotagongalleryphotos">
@@ -68,12 +82,10 @@
 
         // Connect using MySQLi
         $conn = new mysqli($config['host'], $config['username'], $config['password'], $config['dbname']);
-
         // Check connection
         if ($conn->connect_error) {
             die("Connection failed: " . $conn->connect_error);
         }
-
         // Get video_show_status from database
         $videoStatus = 'not_show'; // default fallback
         $sql = "SELECT setting_value FROM common_setting WHERE setting_key = 'video_show_status' LIMIT  1";
@@ -87,6 +99,7 @@
 
     <!-- script start -->
     <script>
+        const video = document.getElementById('intro-video');
         const videoShowStatus = "<?= $videoStatus ?>"; // will be 'is_show' or 'not_show'
         console.log(videoShowStatus);
         
@@ -99,8 +112,32 @@
 
             if (videoShowStatus === "is_show") {
                 // document.getElementById('video-screen').style.display = 'block';
-                document.getElementById('intro-video').style.display = 'block';
-                document.getElementById('intro-video').play();
+                video.style.display = 'block';
+
+                // Trigger fullscreen
+                // if (video.requestFullscreen) {
+                //     video.requestFullscreen();
+                // } else if (video.webkitRequestFullscreen) {
+                //     video.webkitRequestFullscreen(); // Safari
+                // } else if (video.msRequestFullscreen) {
+                //     video.msRequestFullscreen(); // IE11
+                // }
+                video.play();
+
+                 // Wait for video to start, then wait 3 seconds
+                video.addEventListener('play', () => {
+                    setTimeout(() => {
+                        video.pause(); // Optional: stop the video
+                        video.style.display = 'none';
+                        // document.getElementById('video-screen').style.display = 'none';
+
+                        if (isMobile) {
+                            document.getElementById('mobile-card').style.display = 'block';
+                        } else {
+                            document.getElementById('desktop-card').style.display = 'block';
+                        }
+                    }, 3000);
+                }, { once: true });
             } else {
                 if (isMobile) {
                     document.getElementById('mobile-card').style.display = 'block';
@@ -109,20 +146,17 @@
                 }
             }
         });
-
-        document.getElementById('intro-video').addEventListener('ended', function () {
-            // document.getElementById('video-screen').style.display = 'none';
-            document.getElementById('intro-video').style.display = 'none';
-
-            const ua = navigator.userAgent;
-            const isMobile = /Android.*Mobile|iPhone|iPod/i.test(ua);
-
-            if (isMobile) {
-                document.getElementById('mobile-card').style.display = 'block';
-            } else {
-                document.getElementById('desktop-card').style.display = 'block';
-            }
-        });
+        // video.addEventListener('ended', function () {
+        //     // document.getElementById('video-screen').style.display = 'none';
+        //     video.style.display = 'none';
+        //     const ua = navigator.userAgent;
+        //     const isMobile = /Android.*Mobile|iPhone|iPod/i.test(ua);
+        //     if (isMobile) {
+        //         document.getElementById('mobile-card').style.display = 'block';
+        //     } else {
+        //         document.getElementById('desktop-card').style.display = 'block';
+        //     }
+        // });
     </script>
 
     <!-- disable back-->

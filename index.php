@@ -6,59 +6,94 @@
     <title>GPS</title>
     <link href="assets/css/style.css" rel="stylesheet" />
     <style>
-        .card span {
-            display: block;
-            margin-top: 20px;
-            font-size: 0.96rem;
-            color: #abaaaade;
-        }
-        #mobile-card, #desktop-card, #intro-video {
-            display: none;
-        }
-        #intro-video {
-            max-width: 100%;
-            height: auto;
-            border-radius: 10px;
-        }
-        .video-wrapper {
-            text-align: center;
-            padding: 20px;
-        }
+    .card span {
+        display: block;
+        margin-top: 20px;
+        font-size: 0.96rem;
+        color: #abaaaade;
+    }
+
+    #mobile-card,
+    #desktop-card,
+    #intro-video {
+        display: none;
+    }
+
+    #intro-video {
+        max-width: 100%;
+        height: auto;
+        border-radius: 10px;
+    }
+
+    .video-wrapper {
+        text-align: center;
+        padding: 20px;
+    }
     </style>
 </head>
 <body>
+
+    <?php
+        $config = require 'config/connection.php';
+        $conn = new mysqli($config['host'], $config['username'], $config['password'], $config['dbname']);
+
+        if ($conn->connect_error) {
+            die("Connection failed: " . $conn->connect_error);
+        }
+
+        $settings = [];
+        $sql = "SELECT setting_key, setting_value FROM common_setting WHERE setting_key IN (
+            'video_show_status', 'welcome_title', 'welcome_desc', 'welcome_button_text', 'welcome_button_color',
+            'desktop_title', 'desktop_desc', 'desktop_btn_text', 'desktop_btn_color', 'desktop_note',
+            'mobile_title', 'mobile_desc', 'mobile_redirect_link'
+        )";
+        $result = $conn->query($sql);
+
+        if ($result) {
+            while ($row = $result->fetch_assoc()) {
+                $settings[$row['setting_key']] = $row['setting_value'];
+            }
+        }
+        $conn->close();
+    ?>
+
     <div class="container">
 
         <!-- Welcome Screen -->
         <div class="card" id="welcome-card">
-            <h1>Welcome</h1>
-            <!-- <b> questions</b> -->
-            <p>Do you want to view the content?</p>
-            <a class="btn" href="#"  id="continue-btn">Continue</a>  
+            <h1><?= $settings['welcome_title'] ?? 'Welcome' ?></h1>
+            <p><?= $settings['welcome_desc'] ?? 'Do you want to view the content?' ?></p>
+            <a class="btn" id="continue-btn" href="#"
+                style="background: <?= $settings['welcome_button_color'] ?? '#17A34A' ?>">
+                <?= $settings['welcome_button_text'] ?? 'Continue' ?>
+            </a>
         </div>
 
         <!-- Video Screen -->
-        <!-- <div class="card video-wrapper" id="video-screen"> -->
-            <video id="intro-video" src="assets/4.mp4" controls autoplay></video>
-        <!-- </div> -->
+        <video id="intro-video" src="assets/4.mp4" autoplay muted playsinline></video>
 
         <!-- Mobile View -->
         <div class="card" id="mobile-card">
-            <h1>Get Our Mobile App</h1>
-            <p>This content is only available on smartphones. Tablets and desktop devices are not supported.</p>
-            <a class="btn" href="https://play.google.com/store/apps/details?id=com.photolocationstamp.gpsmapgeotagongalleryphotos">
-                Download from Google Play</a>
-            <span>For the best experience, please use a smartphone</span>
+            <h1><?= $settings['mobile_title'] ?? 'Mobile Screen' ?></h1>
+            <p><?= $settings['mobile_desc'] ?? 'Do you know mobile content?' ?></p>
+            <a class="btn" href="<?= $settings['mobile_redirect_link'] ?? '#' ?>"
+                style="background: <?= $settings['desktop_btn_color'] ?? '#17A34A' ?>">
+                <?= $settings['desktop_btn_text'] ?? 'Download from Google Play' ?>
+            </a>
+            <span><?= $settings['desktop_note'] ?? 'For the best experience, please use a smartphone' ?></span>
         </div>
 
         <!-- Desktop View -->
         <div class="card" id="desktop-card">
-            <h1>Get Our Desktop App</h1>
-            <p>This content is only available on desktop and tablets devices. Smartphone is not supported.</p>
-            <a class="btn" href="https://play.google.com/store/apps/details?id=com.photolocationstamp.gpsmapgeotagongalleryphotos">
-                Download from Google Play</a>
-            <span>For the best experience, please use a desktop and tablets devices.</span>
+            <h1><?= $settings['desktop_title'] ?? 'Get Our Desktop App' ?></h1>
+            <p><?= $settings['desktop_desc'] ?? 'This content is only available on desktop.' ?></p>
+            <a class="btn" href="<?= $settings['mobile_redirect_link'] ?? '#' ?>"
+                style="background: <?= $settings['desktop_btn_color'] ?? '#17A34A' ?>">
+                <?= $settings['desktop_btn_text'] ?? 'Download from Google Play' ?>
+            </a>
+            <span><?= $settings['desktop_note'] ?? 'For the best experience, please use a desktop.' ?></span>
         </div>
+
     </div>
 
     <?php
@@ -87,42 +122,28 @@
 
     <!-- script start -->
     <script>
-        const videoShowStatus = "<?= $videoStatus ?>"; // will be 'is_show' or 'not_show'
-        console.log(videoShowStatus);
-        
-        document.getElementById('continue-btn').addEventListener('click', function (e) {
-            e.preventDefault();
-            document.getElementById('welcome-card').style.display = 'none';
+    const videoShowStatus = "<?= $videoStatus ?>"; // will be 'is_show' or 'not_show'
+    console.log(videoShowStatus);
 
-            const ua = navigator.userAgent;
-            const isMobile = /Android.*Mobile|iPhone|iPod/i.test(ua);
+    document.getElementById('continue-btn').addEventListener('click', function(e) {
+        e.preventDefault();
+        document.getElementById('welcome-card').style.display = 'none';
 
-            if (videoShowStatus === "is_show") {
-                // document.getElementById('video-screen').style.display = 'block';
-                document.getElementById('intro-video').style.display = 'block';
-                document.getElementById('intro-video').play();
-            } else {
-                if (isMobile) {
-                    document.getElementById('mobile-card').style.display = 'block';
-                } else {
-                    document.getElementById('desktop-card').style.display = 'block';
-                }
-            }
-        });
+        const ua = navigator.userAgent;
+        const isMobile = /Android.*Mobile|iPhone|iPod/i.test(ua);
 
-        document.getElementById('intro-video').addEventListener('ended', function () {
-            // document.getElementById('video-screen').style.display = 'none';
-            document.getElementById('intro-video').style.display = 'none';
-
-            const ua = navigator.userAgent;
-            const isMobile = /Android.*Mobile|iPhone|iPod/i.test(ua);
-
+        if (videoShowStatus === "is_show") {
+            // document.getElementById('video-screen').style.display = 'block';
+            document.getElementById('intro-video').style.display = 'block';
+            document.getElementById('intro-video').play();
+        } else {
             if (isMobile) {
                 document.getElementById('mobile-card').style.display = 'block';
             } else {
                 document.getElementById('desktop-card').style.display = 'block';
             }
-        });
+        }
+    });
     </script>
 
     <!-- disable back-->
@@ -154,4 +175,5 @@
     </script> -->
 
 </body>
+
 </html>
