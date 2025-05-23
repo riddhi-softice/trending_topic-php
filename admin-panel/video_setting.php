@@ -8,33 +8,46 @@
     $db = getDbInstance();
 
     //Handle update request. As the form's action attribute is set to the same script, but 'POST' method, 
-    if ($_SERVER['REQUEST_METHOD'] == 'POST') 
-    {
-        //Get input data
-        $data_to_update = filter_input_array(INPUT_POST);
-        // print_r($data_to_update); die;
-        
-        $data_to_update['updated_at'] = date('Y-m-d H:i:s');
-        $db = getDbInstance();
-        // $db->where('id',$setting_id);
-        $db->where('setting_key',"video_show_status");
-        $stat = $db->update('common_setting', $data_to_update);
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        $ids = $_POST['ids'] ?? [];
+        $values = $_POST['values'] ?? [];
 
-        if($stat)
-        {
-            $_SESSION['success'] = "Data updated successfully!";
-            //Redirect to the listing page,
-            header("Location: " . $_SERVER['REQUEST_URI']);
-            //Important! Don't execute the rest put the exit/die. 
-            exit();
+        $db = getDbInstance();
+        $updated_at = date('Y-m-d H:i:s');
+        $success = true;
+
+        foreach ($ids as $id) {
+            if (!isset($values[$id])) continue;
+
+            $data = [
+                'setting_value' => $values[$id],
+                'updated_at' => $updated_at
+            ];
+
+            $db->where('id', $id);
+            $stat = $db->update('common_setting', $data);
+
+            if (!$stat) {
+                $success = false;
+                break;
+            }
         }
+
+        if ($success) {
+            $_SESSION['success'] = "All settings updated successfully!";
+        } else {
+            $_SESSION['failure'] = "Something went wrong while updating.";
+        }
+
+        header("Location: " . $_SERVER['REQUEST_URI']);
+        exit();
     }
+
     //If edit variable is set, we are performing the update operation.
     if($edit)
     {
-        $db->where('setting_key',"video_show_status");
         //Get data to pre-populate the form.
-        $customer = $db->getOne("common_setting");
+        $settings = $db->getAll("common_setting");
         // print_r($customer);die;
     }
 ?>
@@ -43,14 +56,13 @@
 
 <div id="page-wrapper">
     <div class="row"> 
-        <h2 class="page-header">Video Setting</h2>
+        <h2 class="page-header">Common Setting</h2>
     </div>
     <!-- Flash messages -->
     <?php include('./includes/flash_messages.php') ?>
-    
-    <form class="" action="" method="post" enctype="multipart/form-data" id="contact_form">        
-        <?php include_once './forms/video_setting_form.php'; ?>
-    </form>
-</div>
+   
+    <!-- Form  -->
+    <?php include_once './forms/video_setting_form.php'; ?>
+                
 
 <?php include_once 'includes/footer.php'; ?>

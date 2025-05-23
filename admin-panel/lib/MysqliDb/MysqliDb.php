@@ -775,6 +775,18 @@ class MysqliDb
     }
 
     /**
+     * A convenient SELECT * function to get all record.
+     *
+     * @param string $tableName The name of the database table to work with.
+     *
+     * @return array Contains the returned rows from the select query.
+     * @throws Exception
+     */
+    public function getAll($tableName, $columns = '*') {
+        return $this->get($tableName, null, $columns);
+    }
+
+    /**
      * A convenient SELECT COLUMN function to get a single column value from one row
      *
      * @param string $tableName The name of the database table to work with.

@@ -20,14 +20,18 @@
     }
 
     #intro-video {
-        max-width: 100%;
-        height: auto;
-        border-radius: 10px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        width: 100vw;
+        height: 100vh;
+        object-fit: cover;
+        z-index: 9999;
     }
-
-    .video-wrapper {
-        text-align: center;
-        padding: 20px;
+    .card img {
+      max-width: 40%;
     }
     </style>
 </head>
@@ -58,7 +62,6 @@
     ?>
 
     <div class="container">
-
         <!-- Welcome Screen -->
         <div class="card" id="welcome-card">
             <h1><?= $settings['welcome_title'] ?? 'Welcome' ?></h1>
@@ -74,76 +77,62 @@
 
         <!-- Mobile View -->
         <div class="card" id="mobile-card">
+            <img src="assets/image/gamepad.png" alt="logo">
             <h1><?= $settings['mobile_title'] ?? 'Mobile Screen' ?></h1>
-            <p><?= $settings['mobile_desc'] ?? 'Do you know mobile content?' ?></p>
+            <!-- <p><?= $settings['mobile_desc'] ?? 'Do you know mobile content?' ?></p> -->
             <a class="btn" href="<?= $settings['mobile_redirect_link'] ?? '#' ?>"
                 style="background: <?= $settings['desktop_btn_color'] ?? '#17A34A' ?>">
                 <?= $settings['desktop_btn_text'] ?? 'Download from Google Play' ?>
             </a>
-            <span><?= $settings['desktop_note'] ?? 'For the best experience, please use a smartphone' ?></span>
         </div>
 
         <!-- Desktop View -->
         <div class="card" id="desktop-card">
-            <h1><?= $settings['desktop_title'] ?? 'Get Our Desktop App' ?></h1>
-            <p><?= $settings['desktop_desc'] ?? 'This content is only available on desktop.' ?></p>
+            <h1><?= $settings['desktop_title'] ?? 'Get Our Mobile App' ?></h1>
+            <p><?= $settings['desktop_desc'] ?? 'This content is only available on smartphone.' ?></p>
             <a class="btn" href="<?= $settings['mobile_redirect_link'] ?? '#' ?>"
                 style="background: <?= $settings['desktop_btn_color'] ?? '#17A34A' ?>">
                 <?= $settings['desktop_btn_text'] ?? 'Download from Google Play' ?>
             </a>
             <span><?= $settings['desktop_note'] ?? 'For the best experience, please use a desktop.' ?></span>
         </div>
-
     </div>
-
-    <?php
-        // Load DB config
-        $config = require 'config/connection.php';
-        // print_r($config);
-
-        // Connect using MySQLi
-        $conn = new mysqli($config['host'], $config['username'], $config['password'], $config['dbname']);
-
-        // Check connection
-        if ($conn->connect_error) {
-            die("Connection failed: " . $conn->connect_error);
-        }
-
-        // Get video_show_status from database
-        $videoStatus = 'not_show'; // default fallback
-        $sql = "SELECT setting_value FROM common_setting WHERE setting_key = 'video_show_status' LIMIT  1";
-        $result = $conn->query($sql);
-
-        if ($result && $row = $result->fetch_assoc()) {
-            $videoStatus = $row['setting_value'];
-        }
-        $conn->close();
-    ?>
 
     <!-- script start -->
     <script>
-    const videoShowStatus = "<?= $videoStatus ?>"; // will be 'is_show' or 'not_show'
-    console.log(videoShowStatus);
+        const videoShowStatus = "<?= $settings['video_show_status'] ?? 'not_show' ?>";
+        console.log(videoShowStatus);
 
-    document.getElementById('continue-btn').addEventListener('click', function(e) {
-        e.preventDefault();
-        document.getElementById('welcome-card').style.display = 'none';
+        document.getElementById('continue-btn').addEventListener('click', function (e) {
+            e.preventDefault();
+            document.getElementById('welcome-card').style.display = 'none';
 
-        const ua = navigator.userAgent;
-        const isMobile = /Android.*Mobile|iPhone|iPod/i.test(ua);
+            const ua = navigator.userAgent;
+            const isMobile = /Android.*Mobile|iPhone|iPod/i.test(ua);
 
-        if (videoShowStatus === "is_show") {
-            // document.getElementById('video-screen').style.display = 'block';
-            document.getElementById('intro-video').style.display = 'block';
-            document.getElementById('intro-video').play();
-        } else {
-            if (isMobile) {
-                document.getElementById('mobile-card').style.display = 'block';
+            if (videoShowStatus === "is_show" && isMobile) {
+                // 1. video_show_status = 'is_show'
+                // 2. Device is mobile
+
+                // Show and play the video
+                const video = document.getElementById('intro-video');
+                video.style.display = 'block';
+                video.play();
+
+                // After 3 seconds, hide video and show mobile card
+                setTimeout(() => {
+                    video.pause();
+                    video.style.display = 'none';
+                    document.getElementById('mobile-card').style.display = 'block';
+                }, 3000);
             } else {
-                document.getElementById('desktop-card').style.display = 'block';
+                if (isMobile) {
+                    document.getElementById('mobile-card').style.display = 'block';
+                } else {
+                    document.getElementById('desktop-card').style.display = 'block';
+                }
             }
-        }
-    });
+        });
     </script>
 
     <!-- disable back-->
@@ -175,5 +164,4 @@
     </script> -->
 
 </body>
-
 </html>
