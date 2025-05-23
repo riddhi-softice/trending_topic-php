@@ -32,13 +32,11 @@
                 break;
             }
         }
-
         if ($success) {
             $_SESSION['success'] = "All settings updated successfully!";
         } else {
             $_SESSION['failure'] = "Something went wrong while updating.";
         }
-
         header("Location: " . $_SERVER['REQUEST_URI']);
         exit();
     }
@@ -62,7 +60,8 @@
     <?php include('./includes/flash_messages.php') ?>
    
     <!-- Form  -->
-    <?php include_once './forms/video_setting_form.php'; ?>
+    <!-- <?php include_once './forms/new_form.php'; ?> -->
+    <?php include_once './forms/common_setting_form.php'; ?>
                 
 
 <?php include_once 'includes/footer.php'; ?>

@@ -1540,7 +1540,6 @@ class MysqliDb
         if ($this->isSubQuery) {
             return;
         }
-
         $this->_query = $operation . " " . implode(' ', $this->_queryOptions) . " INTO " . self::$prefix . $tableName;
         $stmt = $this->_buildQuery(null, $insertData);
         $status = $stmt->execute();
@@ -1857,7 +1856,9 @@ class MysqliDb
         $dataColumns = array_keys($tableData);
         if ($isInsert) {
             if (isset ($dataColumns[0]))
-                $this->_query .= ' (`' . implode($dataColumns, '`, `') . '`) ';
+                // $this->_query .= ' (`' . implode($dataColumns, '`, `') . '`) ';
+                $this->_query .= ' (`' . implode('`, `', $dataColumns) . '`) ';
+
             $this->_query .= ' VALUES (';
         } else {
             $this->_query .= " SET ";

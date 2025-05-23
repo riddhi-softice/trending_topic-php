@@ -5,35 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>GPS</title>
     <link href="assets/css/style.css" rel="stylesheet" />
-    <style>
-    .card span {
-        display: block;
-        margin-top: 20px;
-        font-size: 0.96rem;
-        color: #abaaaade;
-    }
-
-    #mobile-card,
-    #desktop-card,
-    #intro-video {
-        display: none;
-    }
-
-    #intro-video {
-        position: fixed;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        right: 0;
-        width: 100vw;
-        height: 100vh;
-        object-fit: cover;
-        z-index: 9999;
-    }
-    .card img {
-      max-width: 40%;
-    }
-    </style>
 </head>
 <body>
 
@@ -58,6 +29,14 @@
                 $settings[$row['setting_key']] = $row['setting_value'];
             }
         }
+        // Fetch a random video
+        $videoFile = 'default.mp4'; // fallback
+        $sql = "SELECT video_name FROM video_tabel ORDER BY RAND() LIMIT 1";
+        $resultVideo = $conn->query($sql);
+
+        if ($resultVideo && $row = $resultVideo->fetch_assoc()) {
+            $videoFile = $row['video_name'];
+        }
         $conn->close();
     ?>
 
@@ -73,7 +52,8 @@
         </div>
 
         <!-- Video Screen -->
-        <video id="intro-video" src="assets/4.mp4" autoplay muted playsinline></video>
+        <!-- <video id="intro-video" src="assets/4.mp4" autoplay muted playsinline></video> -->
+        <video id="intro-video" src="admin-panel/uploads/videos/<?= htmlspecialchars($videoFile) ?>" autoplay muted playsinline></video>
 
         <!-- Mobile View -->
         <div class="card" id="mobile-card">

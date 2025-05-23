@@ -1,5 +1,5 @@
 <?php
-class Costumers
+class Videos
 {
     /**
      *
@@ -22,12 +22,9 @@ class Costumers
     {
         $ordering = [
             'id' => 'ID',
-            'f_name' => 'First Name',
-            'l_name' => 'Last Name',
-            'gender' => 'Gender',
-            'phone' => 'Phone',
+            // 'video_name' => 'Video Name',
             'created_at' => 'Created at',
-            'updated_at' => 'Updated at'
+            // 'updated_at' => 'Updated at'
         ];
 
         return $ordering;

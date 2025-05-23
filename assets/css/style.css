@@ -101,3 +101,28 @@
         font-size: 0.85rem;
     }
 }
+.card span {
+    display: block;
+    margin-top: 20px;
+    font-size: 0.96rem;
+    color: #abaaaade;
+}
+#mobile-card,
+#desktop-card,
+#intro-video {
+    display: none;
+}
+#intro-video {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    z-index: 9999;
+}
+.card img {
+    max-width: 40%;
+}
