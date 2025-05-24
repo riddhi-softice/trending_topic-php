@@ -70,13 +70,12 @@
         }
     }
 
-
     //If edit variable is set, we are performing the update operation.
     if($edit)
     {
         $db->where('id', $video_id);
         //Get data to pre-populate the form.
-        $customer = $db->getOne("video_tabel");
+        $video = $db->getOne("video_tabel");
     }
 ?>
 

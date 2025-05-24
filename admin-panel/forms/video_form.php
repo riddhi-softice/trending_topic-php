@@ -51,16 +51,15 @@
             <div class="card-header">Video Form</div>
                 <div class="card-body">
 
-                        <?php if (!empty($edit) && !empty($customer['video_name'])): ?>
+                        <?php if (!empty($edit) && !empty($video['video_name'])): ?>
                             <div class="form-group" id="current-video-block">
                                 <label class="font-weight-bold">Current Video:</label><br>
                                 <video width="520" height="240" controls>
-                                    <source src="uploads/videos/<?php echo htmlspecialchars($customer['video_name'], ENT_QUOTES, 'UTF-8'); ?>" type="video/mp4">
+                                    <source src="uploads/videos/<?php echo htmlspecialchars($video['video_name'], ENT_QUOTES, 'UTF-8'); ?>" type="video/mp4">
                                     Your browser does not support the video tag.
                                 </video>
                             </div>
                         <?php endif; ?>
-
 
                         <!-- Preview Selected Video -->
                         <div id="video-preview" style="display:none;" class="form-group">

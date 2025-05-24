@@ -31,7 +31,7 @@ if (!$order_by) {
 
 //Get DB instance. i.e instance of MYSQLiDB Library
 $db = getDbInstance();
-$select = array('id', 'video_name', 'created_at', 'updated_at');
+$select = array('id', 'video_name', 'show_status', 'created_at', 'updated_at');
 
 //If order by option selected
 if ($order_by) {
@@ -51,7 +51,7 @@ include BASE_PATH . '/includes/header.php';
 <div id="page-wrapper">
     <div class="row">
         <div class="col-lg-6">
-            <h1 class="page-header">Customers</h1>
+            <h1 class="page-header">Videos</h1>
         </div>
         <div class="col-lg-6">
             <div class="page-action-links text-right">
@@ -73,14 +73,14 @@ include BASE_PATH . '/includes/header.php';
                         echo ' <option value="' . $opt_value . '" ' . $selected . '>' . $opt_name . '</option>';
                     endforeach;
                     ?>
-                                </select>
-                                <select name="order_by" class="form-control" id="input_order">
-                                    <option value="Asc" <?php
+            </select>
+            <select name="order_by" class="form-control" id="input_order">
+                <option value="Asc" <?php
                     if ($order_by == 'Asc') {
                         echo 'selected';
                     }
                     ?>>Asc</option>
-                                    <option value="Desc" <?php
+                <option value="Desc" <?php
                     if ($order_by == 'Desc') {
                         echo 'selected';
                     }
@@ -95,23 +95,36 @@ include BASE_PATH . '/includes/header.php';
     <table class="table table-striped table-bordered table-condensed">
         <thead>
             <tr>
+                <th width="10%">Show Status</th>
                 <th width="5%">ID</th>
-                <th width="45%">Name</th>
+                <th width="35%">Name</th>
                 <th width="25%">Uploaded At</th>
-                <th width="10%">Actions</th>
+                <th width="20%">Actions</th>
             </tr>
         </thead>
         <tbody>
+            <?php $serial = 1; ?>
             <?php foreach ($rows as $row): ?>
             <tr>
-                <td><?php echo $row['id']; ?></td>
+                <td>
+                    <?php
+                    $isChecked = ($row['show_status'] === 'is_show') ? 'checked' : '';
+                    ?>
+                    <input type="checkbox"
+                        onchange="updateStatus(this, <?= $row['id']; ?>)"
+                        <?= $isChecked ?>
+                        data-id="<?= $row['id']; ?>"
+                        class="form-check-input">
+                </td>
+
+                <td><?php echo $serial++; ?></td> <!-- Serial number instead of DB ID -->
+                <!-- <td><?php echo $row['id']; ?></td> -->
                  <td>
                     <video width="100" height="100" controls>
                         <source src="uploads/videos/<?php echo xss_clean($row['video_name']); ?>" type="video/mp4">
                         Your browser does not support the video tag.
                     </video>
                 </td>
-                <!-- <td><?php echo xss_clean($row['video_name']) ?></td> -->
                 <td>
                     <?php 
                         $timestamp = strtotime($row['created_at']);
@@ -119,11 +132,8 @@ include BASE_PATH . '/includes/header.php';
                     ?>
                 </td>
                 <td>
-                    <a href="edit_video.php?video_id=<?php echo $row['id']; ?>&operation=edit"
-                        class="btn btn-primary"><i class="glyphicon glyphicon-edit"></i></a>
-                    <a href="#" class="btn btn-danger delete_btn" data-toggle="modal"
-                        data-target="#confirm-delete-<?php echo $row['id']; ?>"><i
-                            class="glyphicon glyphicon-trash"></i></a>
+                    <a href="edit_video.php?video_id=<?php echo $row['id']; ?>&operation=edit" class="btn btn-primary"><i class="glyphicon glyphicon-edit"></i></a>
+                    <a href="#" class="btn btn-danger delete_btn" data-toggle="modal" data-target="#confirm-delete-<?php echo $row['id']; ?>"><i class="glyphicon glyphicon-trash"></i></a>
                 </td>
             </tr>
             <!-- Delete Confirmation Modal -->
@@ -162,3 +172,30 @@ include BASE_PATH . '/includes/header.php';
 </div>
 <!-- //Main container -->
 <?php include BASE_PATH . '/includes/footer.php';?>
+
+<script>
+    function updateStatus(checkbox, videoId) {
+        const selectedValue = checkbox.checked ? 'is_show' : 'not_show';
+
+        $.ajax({
+            url: 'update_video_status.php',
+            type: 'POST',
+            data: {
+                id: videoId,
+                show_status: selectedValue
+            },
+            success: function(response) {
+                if (response.trim() === "success") {
+                    location.reload(); // Optional: Reload to show flash message
+                } else {
+                    alert("Failed to update status.");
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX Error:', error);
+                alert("AJAX request failed.");
+            }
+        });
+    }
+
+</script>

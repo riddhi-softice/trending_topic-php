@@ -7,7 +7,7 @@ require_once 'includes/auth_validate.php';
 $db = getDbInstance();
 
 //Get Dashboard information
-$numCustomers = $db->getValue ("common_setting", "count(*)");
+$settinCount = $db->getValue ("common_setting", "count(*)");
 
 include_once('includes/header.php');
 ?>
@@ -28,7 +28,7 @@ include_once('includes/header.php');
                             <i class="fa fa-user fa-5x"></i>
                         </div>
                         <div class="col-xs-9 text-right">
-                            <div class="huge"><?php echo $numCustomers; ?></div>
+                            <div class="huge"><?php echo $settinCount; ?></div>
                             <div>Setting</div>
                         </div>
                     </div>

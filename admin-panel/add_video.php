@@ -4,7 +4,7 @@ require_once './config/config.php';
 require_once './includes/auth_validate.php';
 
 
-//serve POST method, After successful insert, redirect to customers.php page.
+//serve POST method, After successful insert, redirect to list page.
 if ($_SERVER['REQUEST_METHOD'] === 'POST') 
 {
     // Filter input data

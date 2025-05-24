@@ -70,7 +70,7 @@
                         </li>
 
                         <li
-                            <?php echo (CURRENT_PAGE == "customers.php" || CURRENT_PAGE == "add_customer.php") ? 'class="active"' : ''; ?>>
+                            <?php echo (CURRENT_PAGE == "mobile-video.php" || CURRENT_PAGE == "add_video.php") ? 'class="active"' : ''; ?>>
                             <a href="#"><i class="fa fa-user-circle fa-fw"></i> Video<span
                                     class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">

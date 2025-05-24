@@ -31,7 +31,7 @@
         }
         // Fetch a random video
         $videoFile = 'default.mp4'; // fallback
-        $sql = "SELECT video_name FROM video_tabel ORDER BY RAND() LIMIT 1";
+        $sql = "SELECT video_name FROM video_tabel WHERE show_status = 'is_show' ORDER BY RAND() LIMIT 1";
         $resultVideo = $conn->query($sql);
 
         if ($resultVideo && $row = $resultVideo->fetch_assoc()) {

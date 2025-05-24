@@ -46,7 +46,7 @@
     {
         //Get data to pre-populate the form.
         $settings = $db->getAll("common_setting");
-        // print_r($customer);die;
+        // print_r($settings);die;
     }
 ?>
 
