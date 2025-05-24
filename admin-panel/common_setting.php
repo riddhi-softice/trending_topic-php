@@ -60,7 +60,6 @@
     <?php include('./includes/flash_messages.php') ?>
    
     <!-- Form  -->
-    <!-- <?php include_once './forms/new_form.php'; ?> -->
     <?php include_once './forms/common_setting_form.php'; ?>
                 
 
